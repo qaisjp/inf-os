@@ -17,3 +17,16 @@ Operating System Concepts, 9th International student edition, John Wiley, 2013.
 You are expected to read/know this specific book. Most other books are suitable, though.
 
 The slides aren't a replacement of the book.
+
+# Defining an OS
+
+# Historical look
+
+# Key functions
+
+## Timesharing
+
+## Multitasking
+
+# Various types of OS
+_Depends on platform & scenario_
