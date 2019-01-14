@@ -86,6 +86,8 @@ Also: your phone can land a person on the moon. And what do you use it for? lmao
 
 _Software complexity also increases_
 
+# Key functions
+
 ## Async I/O
 
 The disk was super slow. So they added hardware so the disk could operate without tying up the CPU. Now it can start IO and come back to later to see if it's done.
@@ -93,9 +95,21 @@ The disk was super slow. So they added hardware so the disk could operate withou
 - Upside: increases (expensive) CPU utilization
 - Downsides: it's hard to get right, the benefits are job specific
 
-# Key functions
+## Multiprogramming
+
+Pausing programs, continuing another. Programs don't know they are being paused.
 
 ## Timesharing
+
+To support interactive use, create a **timesharing OS**:
+- multiple terminals in one machine
+- each user has illusion of entire machine to themselves
+- optimize response time, perhaps at the cost of throughput
+
+Timeslicing:
+- divide CPU equally among users
+- if the job is truly interactive (e.g editor), then can jump between programs and users faster than users can generate work
+- permits users to interactively view, edit, debug running programs
 
 ## Multitasking
 
