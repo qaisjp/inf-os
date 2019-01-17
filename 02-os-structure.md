@@ -155,3 +155,94 @@ Return to read() --------------------------------------
 These three things cause the OS to _take control_!
 
 # OS structure
+
+- The OS sits between application programs and the hardware.
+  - it mediates access and abstracts away ugliness
+  - programs request services via traps or exceptions
+  - devices request attention via interrupts
+
+# OS Design & Implementation
+ 
+ - Design and Implementation of OS not "solvable", but some approaches have proven successful
+ - Internal structure of different OSs can vary widely
+ - Start the design by defining goals and specs
+ - Affected by choice of hardware, type of system
+ - **User** goals and **System** goals
+  - User goals — operating system should be convenient to use, easy to learn, reliable, safe, and fast
+  - System goals — operating system, should be easy to design, implement, and maintain, as well flexible, reliable, error-free and efficient
+  
+- Important principle to separate
+  - **Policy**: _What_ will be done?
+  - **Mechanism**: _How_ to do it?
+- Mechanisms determine how to do something, policies decide what will be done
+- The separation of policy from mechanism is a very important principle, it allows maximum flexibility if policy decisions are to be changed later (example - timer)
+- Specifying and designing an OS is highly creative task of **software engineering**
+
+# Early structure: monolithic
+
+- user programs
+- `-------`
+- OS: everything
+- `-------`
+- hardware
+
+What's wrong with this?
+- No structure. Gazillions lines of code, everything connected so hard to fix bugs.
+- hard to understand
+- hard to modify
+- unreliable
+- hard to maintain
+
+Major advantage:
+- cost of module interactions is low (procedure call)
+- efficient because no internal boundaries (so no overhead for checking etc)
+
+Alternative:
+- find a way to organise the OS to simplify design & impl
+
+# Layering
+
+Tradition approach is layering. Each layer is like an enhanced 'VM' to the layer above
+
+The first description of this approach was Dijkstra's THE system
+  - Layer 5: Job Managers
+    - Executes user's programs
+  - Layer 4: Device Mgrs
+    - Handle devices and provide buffering
+  - Layer 3: Console Mgrs
+    - Implements virtual consoles
+  - Layer 2: Page Mgrs
+    - Implement virtual memories for each process
+  - Layer 1; Kernel
+    - Impls virtual processors for each process
+  - Layer 0: Hardware
+
+Each layer can be tested & verified independently
+
+# Problems with layering
+
+- Imposes hierarchical structure, but real systems are more complex 
+  - file system requires VM services (buffers)
+  - VM would like to use files as a backing store
+  - **strict layering not flexible enough!**
+- Poor performance (each layer has overhead)
+- Disjunction between model and reality (not really built as layers)
+
+# Hardware Abstraction Layer
+
+- An example of layering in modern OSs
+- Goal: separates hardware-specific routines from the "core" OS
+  - provides portability and improves readability
+
+# Microkernels
+
+- Popular in the late 80s and early 90s
+  - recent resurgence of popularity
+- Goal:
+  - minimize what goes in kernel
+  - organize rest of OS as user-level processes
+- This results in:
+  - better reliability (isolation between components)
+  - ease of extension and customization
+  - poor performance (user/kernel boundary crossings)
+
