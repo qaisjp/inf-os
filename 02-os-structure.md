@@ -246,3 +246,20 @@ Each layer can be tested & verified independently
   - ease of extension and customization
   - poor performance (user/kernel boundary crossings)
 
+# Loadable Kernel Modules
+
+- (Perhaps) the best practice for OS design
+- Core services in the kernel and others dynamically loaded
+- Common in modern implementations (Solaris, Linux, etc)
+- Advantages:
+  - convenient: no need for rebooting for newly added modules
+  - efficient: no need for message passing unlike microkernels
+  - flexible: any module can call any other module unlike the layered model
+
+# Summary
+
+- Fundamental distinction between user & priviliged mode supported by most hardware
+- OS design has been an evolutionary process of trial and error. Probably more error than success
+- Successful OS designs have run the spectrum from monolithic, to layered, to microkernels
+- The role and design of an OS are still evolving
+- It is impossible to pick "correct" way to structure an OS
