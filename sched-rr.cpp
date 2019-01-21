@@ -4,7 +4,7 @@
  */
 
 /*
- * STUDENT NUMBER: s
+ * STUDENT NUMBER: s1620208
  */
 #include <infos/kernel/sched.h>
 #include <infos/kernel/thread.h>
@@ -32,7 +32,11 @@ public:
 	 */
 	void add_to_runqueue(SchedulingEntity& entity) override
 	{
-		not_implemented();
+		// You must make sure that interrupts are
+		// disabled when manipulating the runqueue.
+		UniqueIRQLock l;
+
+		runqueue.enqueue(&entity);
 	}
 
 	/**
@@ -41,17 +45,40 @@ public:
 	 */
 	void remove_from_runqueue(SchedulingEntity& entity) override
 	{
-		not_implemented();
+		// You must make sure that interrupts are
+		// disabled when manipulating the runqueue.
+		UniqueIRQLock l;
+
+		runqueue.remove(&entity);
 	}
 
 	/**
 	 * Called every time a scheduling event occurs, to cause the next eligible entity
 	 * to be chosen.  The next eligible entity might actually be the same entity, if
 	 * e.g. its timeslice has not expired.
+	 *
+	 * In our case, when a new task is picked for execution, it is removed
+	 * from the front of the list, and placed at the back.
+	 * Then, this task is allow to run for its timeslice.
 	 */
 	SchedulingEntity *pick_next_entity() override
 	{
-		not_implemented();
+		if (runqueue.empty()) {
+			return nullptr;
+		}
+
+		// You must make sure that interrupts are
+		// disabled when manipulating the runqueue.
+		UniqueIRQLock l;
+
+		// Remove from the front of the list
+		auto entity = runqueue.dequeue();
+
+		// Add it to the end of the list
+		runqueue.enqueue(entity);
+
+		// Return our entity
+		return entity;
 	}
 
 private:
