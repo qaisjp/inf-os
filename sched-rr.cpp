@@ -63,8 +63,14 @@ public:
 	 */
 	SchedulingEntity *pick_next_entity() override
 	{
+		// If there's nothing in our queue, return nothing
 		if (runqueue.empty()) {
 			return nullptr;
+		}
+
+		// Don't bother with the overhead if we only have one item
+		if (runqueue.count() == 1) {
+			return runqueue.first();
 		}
 
 		// You must make sure that interrupts are
