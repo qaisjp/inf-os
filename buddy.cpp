@@ -180,7 +180,7 @@ private:
 		// Make sure the area_pointer is correctly aligned.
 		assert(is_correct_alignment_for_order(*block_pointer, source_order));
 
-		// Ensure source_order is less than the max order
+		// Ensure source_order is less than the max order (can't merge two largest orders)
 		assert(source_order < MAX_ORDER);
 
 		// Mark the target order
