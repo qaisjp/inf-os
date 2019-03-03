@@ -144,9 +144,25 @@ private:
 		
 		// Make sure the block_pointer is correctly aligned.
 		assert(is_correct_alignment_for_order(*block_pointer, source_order));
+
+		// Ensure source_order is greater than 0, as we can't insert into negative order
+		assert(source_order > 0);
+
+		// Mark the target_order
+		int target_order = source_order - 1;
+
+		// Get the blocks
+		auto left = *block_pointer;
+		auto right = left + pages_per_block(target_order);
+
+		// Remove this block
+		remove_block(*block_pointer, source_order);
+
+		// Add the new blocks
+		insert_block(left, target_order);
+		insert_block(right, target_order);
 		
-		// TODO: Implement this function
-		return nullptr;		
+		return left;
 	}
 	
 	/**
