@@ -224,6 +224,10 @@ public:
 	 */
 	PageDescriptor *alloc_pages(int target_order) override
 	{
+		// Ensure order is valid
+		assert(target_order >= 0);
+		assert(target_order <= MAX_ORDER);
+
 		// Start off with the target order
 		int current_order = target_order;
 		auto free_block = _free_areas[current_order];
