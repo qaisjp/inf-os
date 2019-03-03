@@ -219,12 +219,35 @@ public:
 	/**
 	 * Allocates 2^order number of contiguous pages
 	 * @param order The power of two, of the number of contiguous pages to allocate.
-	 * @return Returns a pointer to the first page descriptor for the newly allocated page range, or NULL if
+	 * @return Returns a pointer to the first page descriptor for the newly allocated page range, or nullptr if
 	 * allocation failed.
 	 */
-	PageDescriptor *alloc_pages(int order) override
+	PageDescriptor *alloc_pages(int target_order) override
 	{
-		not_implemented();
+		// Start off with the target order
+		int current_order = target_order;
+		auto free_block = _free_areas[current_order];
+
+		while (current_order <= MAX_ORDER) {
+			// If a free block is of the current order, remove and return it
+			if (free_block && current_order == target_order) {
+				remove_block(free_block, target_order);
+				return free_block;
+			}
+
+			// If the current order is splittable...
+			if (_free_areas[current_order]) {
+				// Split and decrement
+				free_block = split_block(&_free_areas[current_order], current_order);
+				current_order--;
+			} else {
+				// Split the larger size (later)
+				current_order++;
+			}
+		}
+
+		// No free space
+		return nullptr;
 	}
 	
 	/**
