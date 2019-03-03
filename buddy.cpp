@@ -228,11 +228,10 @@ public:
 		int current_order = target_order;
 		auto free_block = _free_areas[current_order];
 
-		while (current_order <= MAX_ORDER) {
-			// If a free block is of the current order, remove and return it
-			if (free_block && current_order == target_order) {
-				remove_block(free_block, target_order);
-				return free_block;
+		while (!free_block || current_order > target_order) {
+			// Short-circuit if the current order is invalid (cannot allocate page)
+			if (current_order > MAX_ORDER || current_order < 0) {
+				return nullptr;
 			}
 
 			// If the current order is splittable...
@@ -246,8 +245,9 @@ public:
 			}
 		}
 
-		// No free space
-		return nullptr;
+		// Remove the block from the free areas, and return it
+		remove_block(free_block, target_order);
+		return free_block;
 	}
 	
 	/**
