@@ -180,8 +180,29 @@ private:
 		// Make sure the area_pointer is correctly aligned.
 		assert(is_correct_alignment_for_order(*block_pointer, source_order));
 
-		// TODO: Implement this function
-		return nullptr;		
+		// Ensure source_order is less than the max order
+		assert(source_order < MAX_ORDER);
+
+		// Mark the target order
+		int target_order = source_order + 1;
+
+		// Get the blocks
+		auto left = *block_pointer;
+		auto right = buddy_of(left, source_order);
+
+		// buddy_of may actually return the buddy on the "wrong" side, so reorder variables
+		if (left > right) {
+			auto temp = left;
+			left = right;
+			right = temp;
+		}
+
+		// Remove the old blocks
+		remove_block(left, source_order);
+		remove_block(right, source_order);
+
+		// Add the new block and return it
+		return insert_block(left, target_order);
 	}
 	
 public:
