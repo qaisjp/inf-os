@@ -255,6 +255,88 @@ public:
 	}
 	
 	/**
+	 * Checks whether a given page is free. (Student defined.)
+	 * @param pgd The page descriptor of the page to check is free.
+	 * @param order The power of two number of contiguous pages to check
+	 * @return Return TRUE if the page exists in _free_areas, FALSE otherwise.
+	 */
+	bool is_page_free(PageDescriptor* pgd, int order)
+	{
+		auto page = _free_areas[order];
+		while (page != nullptr) {
+			if (page == pgd) {
+				return true;
+			}
+
+			page = page->next_free;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get the smallest page descriptor
+	 * @param pgd_a A pointer to the page descriptor for a page
+	 * @param pgd_b A pointer to another page descriptor (usually its buddy)
+	 * @return Returns the smallest page descriptor
+	 */
+	PageDescriptor* get_smallest_pgd(PageDescriptor* pgd_a, PageDescriptor* pgd_b) {
+		return (pgd_a > pgd_b) ? pgd_b : pgd_a;
+	}
+
+	/**
+	 * The result of a coalesce call. This is useful so you know what the new order is.
+	 * @param pgd A pointer to the first page descriptor for the page.
+	 * @param order The order of that page descriptor
+	 */
+	struct CoalesceResult
+	{
+		PageDescriptor* pgd;
+		int order;
+	};
+
+	/**
+	 * Merges pages as much as possible.
+	 * @param pgd A pointer to an array of page descriptors.
+	 * @param order The power of two of number of contiguous pages.
+	 * @return Returns the result of the coalesce request (see CoalesceResult for more details)
+	 */
+	CoalesceResult coalesce(PageDescriptor* pgd, int order) {
+		// Make sure that the incoming page descriptor is correctly aligned
+		// for the order on which it is being freed, for example, it is
+		// illegal to free page 1 in order-1.
+		assert(is_correct_alignment_for_order(pgd, order));
+
+		// Ensure order is valid
+		assert(order >= 0);
+		assert(order <= MAX_ORDER);
+
+		// If we are on largest order, we can't coalesce further, so short-circuit.
+		if (order == MAX_ORDER) {
+			return CoalesceResult{pgd, order};
+		}
+
+		auto buddy = buddy_of(pgd, order);
+		while (is_page_free(buddy, order)) {
+			// Since the buddy is free, merge ourselves and the buddy
+			pgd = *merge_block(&pgd, order);
+
+			// Now pgd refers to the free pgd in an order above, so bump the order
+			order++;
+
+			// Update our buddy reference to be of the higher order
+			buddy = buddy_of(pgd, order);
+
+			// If we have hit the max order, we shouldn't continue
+			if (order == MAX_ORDER) {
+				break;
+			}
+		}
+
+		return CoalesceResult{pgd, order};
+	}
+
+	/**
 	 * Frees 2^order contiguous pages.
 	 * @param pgd A pointer to an array of page descriptors to be freed.
 	 * @param order The power of two number of contiguous pages to free.
@@ -266,9 +348,17 @@ public:
 		// illegal to free page 1 in order-1.
 		assert(is_correct_alignment_for_order(pgd, order));
 		
-		not_implemented();
+		// Ensure order is valid
+		assert(order >= 0);
+		assert(order <= MAX_ORDER);
+
+		// Free these pages straight away.
+		remove_block(pgd, order);
+
+		// Now coalesce
+		coalesce(pgd, order);
 	}
-	
+
 	/**
 	 * Reserves a specific page, so that it cannot be allocated.
 	 * @param pgd The page descriptor of the page to reserve.
