@@ -353,7 +353,7 @@ public:
 		assert(order <= MAX_ORDER);
 
 		// Free these pages straight away.
-		remove_block(pgd, order);
+		insert_block(pgd, order);
 
 		// Now coalesce
 		coalesce(pgd, order);
