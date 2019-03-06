@@ -275,7 +275,7 @@ public:
 	}
 
 	/**
-	 * Get the smallest page descriptor
+	 * Get the smallest page descriptor (Student defined.)
 	 * @param pgd_a A pointer to the page descriptor for a page
 	 * @param pgd_b A pointer to another page descriptor (usually its buddy)
 	 * @return Returns the smallest page descriptor
@@ -296,7 +296,7 @@ public:
 	};
 
 	/**
-	 * Merges pages as much as possible.
+	 * Merges pages as much as possible. (Student defined.)
 	 * @param pgd A pointer to an array of page descriptors.
 	 * @param order The power of two of number of contiguous pages.
 	 * @return Returns the result of the coalesce request (see CoalesceResult for more details)
@@ -318,7 +318,7 @@ public:
 
 		auto buddy = buddy_of(pgd, order);
 		while (is_page_free(buddy, order)) {
-			// Since the buddy is free, merge ourselves and the buddy
+			// Since the buddy is free, merge ourselves and the buddy. Always returns the LHS.
 			pgd = *merge_block(&pgd, order);
 
 			// Now pgd refers to the free pgd in an order above, so bump the order
