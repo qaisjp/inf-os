@@ -468,8 +468,27 @@ public:
 		
 		// TODO: Initialise the free area linked list for the maximum order
 		// to initialise the allocation algorithm.
-		
-		not_implemented();
+		auto largest_block_size = pages_per_block(MAX_ORDER);
+		auto remaining_pages = nr_page_descriptors % largest_block_size;
+		auto block_count = (nr_page_descriptors - remaining_pages) / largest_block_size;
+
+		auto last_block = page_descriptors + (block_count * largest_block_size);
+
+		debugf("INIT: pages per block: %d, blocks to allocate: %d", largest_block_size, block_count);
+
+		for (auto block = page_descriptors; block <= last_block; block += largest_block_size) {
+			insert_block(block, MAX_ORDER);
+		}
+
+		debugf("INIT: done inserting pages.")
+
+		// todo
+		if (remaining_pages != 0) {
+			assert(false && "init function - remaining_pages is 0 - NOT IMPLEMENTED");
+		}
+
+		debugf("INIT: done initialising buddy algorithm")
+		return true;
 	}
 
 	/**
