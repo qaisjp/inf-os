@@ -331,7 +331,7 @@ public:
 	bool does_block_contain_page(PageDescriptor* block, int order, PageDescriptor* pgd) {
 		auto size = pages_per_block(order);
 		PageDescriptor* last_page = block + size;
-		return (pgd >= block) && (pgd <= last_page);
+		return (pgd >= block) && (pgd < last_page);
 	}
 
 	/**
