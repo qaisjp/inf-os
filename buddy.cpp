@@ -18,6 +18,8 @@ using namespace infos::mm;
 using namespace infos::util;
 
 #define MAX_ORDER	16 // This is the maximum possible order value
+// note to author: maximum value of order != number of orders)
+// 				   if you meant for this to be number of orders, you should have named it ORDER_COUNT
 
 // #define DEBUGPRINT
 
