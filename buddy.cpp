@@ -19,6 +19,14 @@ using namespace infos::util;
 
 #define MAX_ORDER	17
 
+#define DEBUG_ENABLED true
+
+#ifdef DEBUG_ENABLED
+	#define debugf(...) mm_log.messagef(LogLevel::DEBUG, __VA_ARGS__);
+#else
+	#define debugf(...)
+#endif
+
 /**
  * A buddy page allocation algorithm.
  */
