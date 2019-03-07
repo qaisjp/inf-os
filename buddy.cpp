@@ -177,6 +177,7 @@ private:
 		insert_block(left, target_order);
 		insert_block(right, target_order);
 		
+		debugf("SPLIT_BLOCK: returning %p", left);
 		return left;
 	}
 
@@ -278,6 +279,7 @@ public:
 				debugf("ALLOC_PAGES: splitting up free area %p (current_order: %d)", _free_areas[current_order], current_order);
 				free_block = split_block(&_free_areas[current_order], current_order);
 				current_order--;
+				debugf("ALLOC_PAGES: split complete")
 			} else {
 				// Split the larger size (later)
 				current_order++;
@@ -471,6 +473,7 @@ public:
 		}
 
 		// Couldn't find, so we're done!
+		debugf("RESERVE_PAGE returning false")
 		return false;
 	}
 	
