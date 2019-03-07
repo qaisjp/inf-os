@@ -297,20 +297,20 @@ public:
 	 * Checks whether a given page is free. (Student defined.)
 	 * @param pgd The page descriptor of the page to check is free.
 	 * @param order The power of two number of contiguous pages to check
-	 * @return Return TRUE if the page exists in _free_areas, FALSE otherwise.
+	 * @return If the page can be found, return the slot of the free page. Otherwise return nullptr.
 	 */
-	bool is_page_free(PageDescriptor* pgd, int order)
+	PageDescriptor** is_page_free(PageDescriptor* pgd, int order)
 	{
-		auto page = _free_areas[order];
-		while (page != nullptr) {
-			if (page == pgd) {
-				return true;
+		auto slot = &_free_areas[order];
+		while (*slot != nullptr) {
+			if (*slot == pgd) {
+				return slot;
 			}
 
-			page = page->next_free;
+			slot = &(*slot)->next_free;
 		}
 
-		return false;
+		return nullptr;
 	}
 
 	/**
@@ -369,7 +369,7 @@ public:
 		}
 
 		auto buddy = buddy_of(pgd, order);
-		while (is_page_free(buddy, order)) {
+		while (is_page_free(buddy, order) != nullptr) {
 			// Since the buddy is free, merge ourselves and the buddy. Always returns the LHS.
 			pgd = *merge_block(&pgd, order);
 
