@@ -17,7 +17,7 @@ using namespace infos::kernel;
 using namespace infos::mm;
 using namespace infos::util;
 
-#define MAX_ORDER	17
+#define MAX_ORDER	16 // This is the maximum possible order value
 
 #define DEBUG_ENABLED true
 
@@ -68,7 +68,7 @@ private:
 	PageDescriptor *buddy_of(PageDescriptor *pgd, int order)
 	{
 		// (1) Make sure 'order' is within range
-		if (order >= MAX_ORDER) {
+		if (order > MAX_ORDER) {
 			return NULL;
 		}
 
@@ -539,7 +539,7 @@ public:
 
 	
 private:
-	PageDescriptor *_free_areas[MAX_ORDER];
+	PageDescriptor *_free_areas[MAX_ORDER+1];
 };
 
 /* --- DO NOT CHANGE ANYTHING BELOW THIS LINE --- */
