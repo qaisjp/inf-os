@@ -97,6 +97,8 @@ private:
 	 */
 	PageDescriptor **insert_block(PageDescriptor *pgd, int order)
 	{
+		debugf("insert_block(%p, %d)", pgd, order);
+
 		// Starting from the _free_area array, find the slot in which the page descriptor
 		// should be inserted.
 		PageDescriptor **slot = &_free_areas[order];
@@ -147,6 +149,8 @@ private:
 	 */
 	PageDescriptor *split_block(PageDescriptor **block_pointer, int source_order)
 	{
+		debugf("SPLIT_BLOCK: block_pointer: %p, *block_pointer: *%p, source_order: %d", block_pointer, *block_pointer, source_order);
+
 		// Make sure there is an incoming pointer.
 		assert(*block_pointer);
 		
@@ -245,23 +249,33 @@ public:
 	 */
 	PageDescriptor *alloc_pages(int target_order) override
 	{
+		debugf("ALLOC_PAGES: target_order: %d", target_order)
+
 		// Ensure order is valid
 		assert(target_order >= 0);
 		assert(target_order <= MAX_ORDER);
+
+		debugf("ALLOC_PAGES: assertion success");
 
 		// Start off with the target order
 		int current_order = target_order;
 		auto free_block = _free_areas[current_order];
 
 		while (!free_block || current_order > target_order) {
+			// debugf("***** WHILE DUMP START")
+			// dump_state();
+			// debugf("***** WHILE DUMP END")
+
 			// Short-circuit if the current order is invalid (cannot allocate page)
 			if (current_order > MAX_ORDER || current_order < 0) {
+				debugf("ALLOC_PAGES: cannot allocate page. current_order is %d (this is the eventual order)", current_order)
 				return nullptr;
 			}
 
 			// If the current order is splittable...
 			if (_free_areas[current_order]) {
 				// Split and decrement
+				debugf("ALLOC_PAGES: splitting up free area %p (current_order: %d)", _free_areas[current_order], current_order);
 				free_block = split_block(&_free_areas[current_order], current_order);
 				current_order--;
 			} else {
@@ -272,6 +286,8 @@ public:
 
 		// Remove the block from the free areas, and return it
 		remove_block(free_block, target_order);
+
+		debugf("ALLOC_PAGES: returning %p", free_block)
 		return free_block;
 	}
 	
