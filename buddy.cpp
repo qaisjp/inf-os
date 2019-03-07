@@ -172,6 +172,20 @@ private:
 		
 		return left;
 	}
+
+	/**
+	 * Reorders two page descriptors to be in order
+	 * @param left A pointer to a page descriptor (what is believed to be the LHS)
+	 * @param right A pointer to another page descriptor (what is believed to be the RHS)
+	 * @action Do left,right = right,left if left > right
+	 */
+	void order_pages(PageDescriptor* &left, PageDescriptor* &right) {
+		if (left > right) {
+			auto temp = left;
+			left = right;
+			right = temp;
+		}
+	}
 	
 	/**
 	 * Takes a block in the given source order, and merges it (and it's buddy) into the next order.
@@ -199,11 +213,7 @@ private:
 		auto right = buddy_of(left, source_order);
 
 		// buddy_of may actually return the buddy on the "wrong" side, so reorder variables
-		if (left > right) {
-			auto temp = left;
-			left = right;
-			right = temp;
-		}
+		order_pages(left, right);
 
 		// Remove the old blocks
 		remove_block(left, source_order);
