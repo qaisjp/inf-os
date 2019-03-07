@@ -285,6 +285,19 @@ public:
 	}
 
 	/**
+	 * Check whether a block contains a page. (Student defined.)
+	 * @param block A pointer to an array of page descriptors
+	 * @param order The power of two of the number of contiguous pages in the block
+	 * @param pgd The page to check if is inside the block
+	 * @return Returns TRUE if the page is inside the block, FALSE otherwise
+	 */
+	bool does_block_contain_page(PageDescriptor* block, int order, PageDescriptor* pgd) {
+		auto size = pages_per_block(order);
+		PageDescriptor* last_page = block + size;
+		return (pgd >= block) && (pgd <= last_page);
+	}
+
+	/**
 	 * The result of a coalesce call. This is useful so you know what the new order is.
 	 * @param pgd A pointer to the first page descriptor for the page.
 	 * @param order The order of that page descriptor
@@ -366,7 +379,62 @@ public:
 	 */
 	bool reserve_page(PageDescriptor *pgd)
 	{
-		not_implemented();
+		auto order = MAX_ORDER;
+		PageDescriptor* current_block = nullptr;
+
+		// For each order, starting from largest
+		while (order >= 0)
+		{
+			// If the pgd matches and order is 0, we are done!
+			if (current_block == pgd && order == 0) {
+				remove_block(current_block, order);
+				return true;
+			}
+
+			// If the block containing the page has been found...
+			if (current_block != nullptr) {
+				auto left = split_block(&current_block, order);
+				auto new_order = order - 1;
+
+				// If the LHS-block contains the page...
+				if (does_block_contain_page(left, new_order, pgd)) {
+					// ...update the current block!
+					current_block = left;
+				} else {
+					auto right = buddy_of(left, new_order);
+
+					// The RHS must contain the block
+					assert(does_block_contain_page(right, new_order, pgd));
+
+					current_block = right;
+				}
+
+				// Split further down, on the next loop.
+				order--;
+				continue;
+			}
+
+			// Search through the free areas, starting off with the first free area of this order
+			current_block = _free_areas[order];
+			while (current_block != nullptr) {
+
+				// If pgd is between (inclusive) the current block and the last page of that block...
+				if (does_block_contain_page(current_block, order, pgd)) {
+					// ... stop searching, we've discovered the block!
+					break;
+				}
+
+				current_block = current_block->next_free;
+			}
+
+			// Search lower down if the block was not found.
+			if (current_block == nullptr) {
+				order--;
+			}
+		}
+
+		// Couldn't find, so we're done!
+		return false;
 	}
 	
 	/**
