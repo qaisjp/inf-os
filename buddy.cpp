@@ -449,7 +449,7 @@ public:
 				}
 
 				// Split further down, on the next loop.
-				order--;
+				order = new_order;
 				continue;
 			}
 
