@@ -161,7 +161,10 @@ private:
 
 		// Get the blocks
 		auto left = *block_pointer;
-		auto right = left + pages_per_block(target_order);
+		auto right = buddy_of(left, target_order);
+
+		// The LHS must be less than the RHS
+		assert(left < right);
 
 		// Remove this block
 		remove_block(*block_pointer, source_order);
