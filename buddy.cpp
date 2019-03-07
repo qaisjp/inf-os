@@ -418,15 +418,28 @@ public:
 	 */
 	bool reserve_page(PageDescriptor *pgd)
 	{
+		debugf("RESERVE_PAGE(pgd: %p)", pgd)
+
 		auto order = MAX_ORDER;
 		PageDescriptor* current_block = nullptr;
 
 		// For each order, starting from largest
 		while (order >= 0)
 		{
-			// If the pgd matches and order is 0, we are done!
-			if (current_block == pgd && order == 0) {
-				remove_block(current_block, order);
+			// If the order is 0, and we have found the block, search through the block
+			if (order == 0 && current_block)
+			{
+				auto slot = is_page_free(pgd, 0);
+				if (slot == nullptr) {
+					debugf("RESERVE_PAGE returning false (no free page in order 0)")
+					return false;
+				}
+
+				// The page at the slot should be equal to the pgd we're finding
+				assert(*slot == pgd);
+
+				debugf("RESERVE_PAGE returning true (removing %p)", *slot)
+				remove_block(*slot, 0);
 				return true;
 			}
 
