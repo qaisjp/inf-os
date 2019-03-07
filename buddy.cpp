@@ -19,9 +19,9 @@ using namespace infos::util;
 
 #define MAX_ORDER	16 // This is the maximum possible order value
 
-#define DEBUG_ENABLED true
+// #define DEBUGPRINT
 
-#ifdef DEBUG_ENABLED
+#ifdef DEBUGPRINT
 	#define debugf(...) mm_log.messagef(LogLevel::DEBUG, __VA_ARGS__);
 #else
 	#define debugf(...)
