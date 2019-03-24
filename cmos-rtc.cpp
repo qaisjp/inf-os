@@ -53,7 +53,7 @@ private:
 	 * Reads a specific register from the CMOS
 	 * @param reg The register to read
 	 */
-	uint8_t get_RTC_register(int reg)
+	uint8_t get_cmos_register(int reg)
 	{
 		__outb(CMOS_ADDRESS, reg); // activate the register
 		return __inb(CMOS_DATA);
@@ -65,9 +65,9 @@ private:
 	 * @param reg The register to read
 	 * @param bit The nth bit to read
 	 */
-	uint8_t get_RTC_register(int reg, int bit)
+	uint8_t get_cmos_register(int reg, int bit)
 	{
-		return (get_RTC_register(reg) >> bit) & 1;
+		return (get_cmos_register(reg) >> bit) & 1;
 	}
 
 	/**
@@ -80,7 +80,7 @@ private:
 		// Note: @returns text has been plucked from http://www.bioscentral.com/misc/cmosmap.htm
 
 		// Read bit 7 from status register A
-		auto bit = get_RTC_register(0xA, 7);
+		auto bit = get_cmos_register(0xA, 7);
 
 		// The bit is non-zero if an update is in progress
 		return bit != 0;
@@ -104,12 +104,12 @@ private:
 		}
 
 		return RTCTimePoint{
-			.seconds = get_RTC_register(0x00),
-			.minutes = get_RTC_register(0x02),
-			.hours = get_RTC_register(0x04),
-			.day_of_month = get_RTC_register(0x07),
-			.month = get_RTC_register(0x08),
-			.year = get_RTC_register(0x09),
+			.seconds = get_cmos_register(0x00),
+			.minutes = get_cmos_register(0x02),
+			.hours = get_cmos_register(0x04),
+			.day_of_month = get_cmos_register(0x07),
+			.month = get_cmos_register(0x08),
+			.year = get_cmos_register(0x09),
 		};
 	}
 
