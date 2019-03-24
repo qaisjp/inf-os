@@ -77,6 +77,23 @@ public:
 		return bit == 0;
 	}
 
+	/**
+	 * Reads the CMOS to determine if we are in 24hr mode
+	 * @returns true if we are in 24hr mode
+	 */
+	bool is_24hr_mode()
+	{
+		// You must make sure that interrupts are
+		// disabled when accessing the RTC
+		UniqueIRQLock l;
+
+		// Read bit 1 from status register B
+		auto bit = get_cmos_register(0xB, 2);
+
+		// The bit is non-zero if we are in 24hr mode
+		return bit != 0;
+	}
+
 private:
 	int const CMOS_ADDRESS = 0x70;
 	int const CMOS_DATA = 0x71;
