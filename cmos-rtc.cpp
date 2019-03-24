@@ -52,12 +52,14 @@ public:
 	 */
 	void convert_tp_from_bcd(RTCTimePoint& tp)
 	{
-		tp.seconds = (tp.seconds & 0x0F) + ((tp.seconds / 16) * 10);
-		tp.minutes = (tp.minutes & 0x0F) + ((tp.minutes / 16) * 10);
-		tp.hours = ( (tp.hours & 0x0F) + (((tp.hours & 0x70) / 16) * 10) ) | (tp.hours & 0x80);
-		tp.day_of_month = (tp.day_of_month & 0x0F) + ((tp.day_of_month / 16) * 10);
-		tp.month = (tp.month & 0x0F) + ((tp.month / 16) * 10);
-		tp.year = (tp.year & 0x0F) + ((tp.year / 16) * 10);
+		tp.seconds = from_bcd(tp.seconds);
+		tp.minutes = from_bcd(tp.minutes);
+		// Below line from https://wiki.osdev.org/CMOS#Examples
+		// tp.hours = ( (tp.hours & 0xF) + (((tp.hours & 0x70) / 16) * 10) ) | (tp.hours & 0x80);
+		tp.hours = from_bcd(tp.hours);
+		tp.day_of_month = from_bcd(tp.day_of_month);
+		tp.month = from_bcd(tp.month);
+		tp.year = from_bcd(tp.year);
 	}
 
 	/**
@@ -180,6 +182,15 @@ private:
 			(a.year == b.year) &&
 			true
 		);
+	}
+
+	/**
+	 * Converts a two-digit number in BCD to the native number format
+	 * @param n The binary-coded decimal number
+	 * @return A natively understood number
+	 */
+	constexpr inline unsigned short from_bcd(unsigned short n) {
+		return ((n >> 4) * 10) + (n & 0xF);
 	}
 };
 
