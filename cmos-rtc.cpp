@@ -26,8 +26,8 @@ public:
 
 	/**
 	 * Interrogates the RTC to read the current date & time.
-	 * @param tp Populates the tp structure with the current data & time, as
-	 * given by the CMOS RTC device.
+	 * @param current Populates the given structure with the current
+	 * data & time, as given by the CMOS RTC device.
 	 */
 	void read_timepoint(RTCTimePoint& current) override
 	{
@@ -104,6 +104,7 @@ private:
 	 * Reads a specific register from the CMOS
 	 * @warning Does not ensure interrupts are disabled. Use with care.
 	 * @param reg The register to read
+	 * @return The data at the given register
 	 */
 	uint8_t get_cmos_register(int reg)
 	{
@@ -117,6 +118,7 @@ private:
 	 * @warning This reads the entire register as well, so is not suitable for batch operations.
 	 * @param reg The register to read
 	 * @param bit The nth bit to read
+	 * @return The nth bit at the given register
 	 */
 	uint8_t get_cmos_register(int reg, int bit)
 	{
@@ -126,7 +128,7 @@ private:
 	/**
 	 * Reads the CMOS to determine if an RTC update is in progress
 	 * @warning Does not ensure interrupts are disabled. Use with care.
-	 * @returns boolean of update in progress (0 = Date and time can be read, 1 = Time update in progress)
+	 * @return true if time update in progress, false otherwise (date and time is safe to be read)
 	 */
 	bool is_update_in_progress()
 	{
@@ -167,10 +169,10 @@ private:
 	}
 
 	/**
-	 * Checks to see if two timepoints are different
+	 * Checks to see if two timepoints are equal
 	 * @param a Timepoint A
 	 * @param b Timepoint B
-	 * @return Timepoint A == Timepoint B
+	 * @return true if timepoint A == timepoint B, false otherwise
 	 */
 	bool tp_eq(RTCTimePoint a, RTCTimePoint b) {
 		return (
