@@ -55,6 +55,11 @@ private:
 		return __inb(CMOS_DATA);
 	}
 
+	uint8_t get_RTC_register(int reg, int bit)
+	{
+		return (get_RTC_register(reg) >> bit) & 1;
+	}
+
 	/**
 	 * Reads the CMOS to determine if an RTC update is in progress
 	 * @warning Does not ensure interrupts are disabled. Use with care.
@@ -64,14 +69,8 @@ private:
 	{
 		// Note: @returns text has been plucked from http://www.bioscentral.com/misc/cmosmap.htm
 
-		// Read status register A
-		auto reg = get_RTC_register(0xA);
-
-		// Extract the 7th bit
-		auto bit = (reg >> 7) & 1;
-
 		// The bit is non-zero if an update is in progress
-		return bit != 0;
+		return get_RTC_register(0xA, 7) != 0;
 	}
 
 	/**
