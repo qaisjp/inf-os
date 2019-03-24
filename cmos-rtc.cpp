@@ -83,6 +83,7 @@ private:
 
 	/**
 	 * Reads a specific register from the CMOS
+	 * @warning Does not ensure interrupts are disabled. Use with care.
 	 * @param reg The register to read
 	 */
 	uint8_t get_cmos_register(int reg)
@@ -93,6 +94,7 @@ private:
 
 	/**
 	 * Reads a specific bit from a specific register from the CMOS
+	 * @warning Does not ensure interrupts are disabled. Use with care.
 	 * @warning This reads the entire register as well, so is not suitable for batch operations.
 	 * @param reg The register to read
 	 * @param bit The nth bit to read
