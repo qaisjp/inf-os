@@ -49,12 +49,22 @@ private:
 	int const CMOS_ADDRESS = 0x70;
 	int const CMOS_DATA = 0x71;
 
+	/**
+	 * Reads a specific register from the CMOS
+	 * @param reg The register to read
+	 */
 	uint8_t get_RTC_register(int reg)
 	{
 		__outb(CMOS_ADDRESS, reg); // activate the register
 		return __inb(CMOS_DATA);
 	}
 
+	/**
+	 * Reads a specific bit from a specific register from the CMOS
+	 * @warning This reads the entire register as well, so is not suitable for batch operations.
+	 * @param reg The register to read
+	 * @param bit The nth bit to read
+	 */
 	uint8_t get_RTC_register(int reg, int bit)
 	{
 		return (get_RTC_register(reg) >> bit) & 1;
@@ -69,8 +79,11 @@ private:
 	{
 		// Note: @returns text has been plucked from http://www.bioscentral.com/misc/cmosmap.htm
 
+		// Read bit 7 from status register A
+		auto bit = get_RTC_register(0xA, 7);
+
 		// The bit is non-zero if an update is in progress
-		return get_RTC_register(0xA, 7) != 0;
+		return bit != 0;
 	}
 
 	/**
