@@ -41,8 +41,40 @@ public:
 			current = get_timepoint();
 		} while (!tp_eq(current, previous));
 
+		if (is_bcd_mode()) {
+			convert_tp_from_bcd(current);
+		}
+	}
 
-		// FILL IN THIS METHOD - WRITE HELPER METHODS IF NECESSARY
+	/**
+	 * Converts a timepoint from BCD to binary values
+	 * @param tp The timepoint to convert
+	 */
+	void convert_tp_from_bcd(RTCTimePoint& tp)
+	{
+		tp.seconds = (tp.seconds & 0x0F) + ((tp.seconds / 16) * 10);
+		tp.minutes = (tp.minutes & 0x0F) + ((tp.minutes / 16) * 10);
+		tp.hours = ( (tp.hours & 0x0F) + (((tp.hours & 0x70) / 16) * 10) ) | (tp.hours & 0x80);
+		tp.day_of_month = (tp.day_of_month & 0x0F) + ((tp.day_of_month / 16) * 10);
+		tp.month = (tp.month & 0x0F) + ((tp.month / 16) * 10);
+		tp.year = (tp.year & 0x0F) + ((tp.year / 16) * 10);
+	}
+
+	/**
+	 * Reads the CMOS to determine if we are in BCD mode
+	 * @returns true if we are in BCD mode
+	 */
+	bool is_bcd_mode()
+	{
+		// You must make sure that interrupts are
+		// disabled when accessing the RTC
+		UniqueIRQLock l;
+
+		// Read bit 2 from status register B
+		auto bit = get_cmos_register(0xB, 2);
+
+		// The bit is zero if register values are in binary coded decimal
+		return bit == 0;
 	}
 
 private:
