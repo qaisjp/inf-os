@@ -44,6 +44,13 @@ public:
 		if (is_bcd_mode()) {
 			convert_tp_from_bcd(current);
 		}
+
+		// If we are in 12hr mode, and the PM bit is set
+		if (is_12hr_mode() && (current.hours & 0x80)) {
+			// Mask off the PM bit, add 12, and apply sanity check
+			// Note: Midnight in 12hr mode is `12`, not `0`
+			current.hours = ((current.hours & 0x7F) + 12) % 24;
+		}
 	}
 
 	/**
@@ -80,10 +87,10 @@ public:
 	}
 
 	/**
-	 * Reads the CMOS to determine if we are in 24hr mode
-	 * @returns true if we are in 24hr mode
+	 * Reads the CMOS to determine if we are in 12hr mode
+	 * @returns true if we are in 12hr mode
 	 */
-	bool is_24hr_mode()
+	bool is_12hr_mode()
 	{
 		// You must make sure that interrupts are
 		// disabled when accessing the RTC
@@ -92,8 +99,8 @@ public:
 		// Read bit 1 from status register B
 		auto bit = get_cmos_register(0xB, 2);
 
-		// The bit is non-zero if we are in 24hr mode
-		return bit != 0;
+		// The bit is zero if we are in 12hr mode
+		return bit == 0;
 	}
 
 private:
