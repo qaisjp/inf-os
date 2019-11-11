@@ -1,2 +1,2 @@
-# inf-os-notes
+# inf-os
 Operating Systems
